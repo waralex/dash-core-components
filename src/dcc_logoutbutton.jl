@@ -4,8 +4,6 @@ export dcc_logoutbutton
 
 """
     dcc_logoutbutton(;kwargs...)
-    dcc_logoutbutton(children::Any;kwargs...)
-    dcc_logoutbutton(children_maker::Function;kwargs...)
 
 A LogoutButton component.
 Logout button to submit a form post request to the `logout_url` prop.
@@ -43,28 +41,8 @@ Those elements have the following types:
   - `component_name` (String; optional): Holds the name of the component that is loading
 """
 function dcc_logoutbutton(; kwargs...)
-        available_props = Set(Symbol[:id, :label, :logout_url, :style, :method, :className, :loading_state])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("LogoutButton", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_logoutbutton"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :label, :logout_url, :style, :method, :className, :loading_state]
+        wild_props = Symbol[]
+        return Component("dcc_logoutbutton", "LogoutButton", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_logoutbutton(children::Any; kwargs...)
-    result = dcc_logoutbutton(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_logoutbutton(children_maker::Function; kwargs...) = dcc_logoutbutton(children_maker(); kwargs...)

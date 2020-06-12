@@ -7,6 +7,7 @@ export dcc_link
     dcc_link(children::Any;kwargs...)
     dcc_link(children_maker::Function;kwargs...)
 
+
 A Link component.
 Link allows you to create a clickable link within a multi-page app.
 
@@ -28,28 +29,11 @@ Those elements have the following types:
   - `component_name` (String; optional): Holds the name of the component that is loading
 """
 function dcc_link(; kwargs...)
-        available_props = Set(Symbol[:children, :id, :href, :refresh, :className, :style, :loading_state])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Link", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_link"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:children, :id, :href, :refresh, :className, :style, :loading_state]
+        wild_props = Symbol[]
+        return Component("dcc_link", "Link", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_link(children::Any; kwargs...)
-    result = dcc_link(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
+dcc_link(children::Any; kwargs...) = dcc_link(;kwargs..., children = children)
 dcc_link(children_maker::Function; kwargs...) = dcc_link(children_maker(); kwargs...)
+

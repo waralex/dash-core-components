@@ -7,6 +7,7 @@ export dcc_tabs
     dcc_tabs(children::Any;kwargs...)
     dcc_tabs(children_maker::Function;kwargs...)
 
+
 A Tabs component.
 A Dash component that lets you render pages with tabs - the Tabs component's children
 can be dcc.Tab components, which can hold a label that will be displayed as a tab, and can in turn hold
@@ -24,7 +25,7 @@ components in an app.
 - `parent_style` (Dict; optional): Appends (inline) styles to the top-level parent container holding both the Tabs container and the content container.
 - `content_style` (Dict; optional): Appends (inline) styles to the tab content container holding the children of the Tab that is selected.
 - `vertical` (Bool; optional): Renders the tabs vertically (on the side)
-- `mobile_breakpoint` (Float64; optional): Breakpoint at which tabs are rendered full width (can be 0 if you don't want full width tabs on mobile)
+- `mobile_breakpoint` (Real; optional): Breakpoint at which tabs are rendered full width (can be 0 if you don't want full width tabs on mobile)
 - `colors` (optional): Holds the colors used by the Tabs and Tab components. If you set these, you should specify colors for all properties, so:
 colors: {
    border: '#d6d6d6',
@@ -40,7 +41,7 @@ Those elements have the following types:
   - `is_loading` (Bool; optional): Determines if the component is loading or not
   - `prop_name` (String; optional): Holds which property is loading
   - `component_name` (String; optional): Holds the name of the component that is loading
-- `persistence` (Bool | String | Float64; optional): Used to allow user interactions in this component to be persisted when
+- `persistence` (Bool | String | Real; optional): Used to allow user interactions in this component to be persisted when
 the component - or the page - is refreshed. If `persisted` is truthy and
 hasn't changed from its previous value, a `value` that the user has
 changed while using the app will keep that change, as long as
@@ -55,28 +56,11 @@ local: window.localStorage, data is kept after the browser quit.
 session: window.sessionStorage, data is cleared once the browser quit.
 """
 function dcc_tabs(; kwargs...)
-        available_props = Set(Symbol[:children, :id, :value, :className, :content_className, :parent_className, :style, :parent_style, :content_style, :vertical, :mobile_breakpoint, :colors, :loading_state, :persistence, :persisted_props, :persistence_type])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Tabs", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_tabs"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:children, :id, :value, :className, :content_className, :parent_className, :style, :parent_style, :content_style, :vertical, :mobile_breakpoint, :colors, :loading_state, :persistence, :persisted_props, :persistence_type]
+        wild_props = Symbol[]
+        return Component("dcc_tabs", "Tabs", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_tabs(children::Any; kwargs...)
-    result = dcc_tabs(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
+dcc_tabs(children::Any; kwargs...) = dcc_tabs(;kwargs..., children = children)
 dcc_tabs(children_maker::Function; kwargs...) = dcc_tabs(children_maker(); kwargs...)
+

@@ -7,6 +7,7 @@ export dcc_markdown
     dcc_markdown(children::Any;kwargs...)
     dcc_markdown(children_maker::Function;kwargs...)
 
+
 A Markdown component.
 A component that renders Markdown text as specified by the
 GitHub Markdown spec. These component uses
@@ -36,28 +37,11 @@ Those elements have the following types:
 - `style` (Dict; optional): User-defined inline styles for the rendered Markdown
 """
 function dcc_markdown(; kwargs...)
-        available_props = Set(Symbol[:children, :id, :className, :dangerously_allow_html, :dedent, :highlight_config, :loading_state, :style])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Markdown", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_markdown"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:children, :id, :className, :dangerously_allow_html, :dedent, :highlight_config, :loading_state, :style]
+        wild_props = Symbol[]
+        return Component("dcc_markdown", "Markdown", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_markdown(children::Any; kwargs...)
-    result = dcc_markdown(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
+dcc_markdown(children::Any; kwargs...) = dcc_markdown(;kwargs..., children = children)
 dcc_markdown(children_maker::Function; kwargs...) = dcc_markdown(children_maker(); kwargs...)
+

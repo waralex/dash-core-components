@@ -4,8 +4,6 @@ export dcc_datepickerrange
 
 """
     dcc_datepickerrange(;kwargs...)
-    dcc_datepickerrange(children::Any;kwargs...)
-    dcc_datepickerrange(children_maker::Function;kwargs...)
 
 A DatePickerRange component.
 DatePickerRange is a tailor made component designed for selecting
@@ -44,14 +42,14 @@ in the format 'YYYY-MM-DD'
 box of the date picker when no date is selected. Default value is 'Start Date'
 - `end_date_placeholder_text` (String; optional): Text that will be displayed in the second input
 box of the date picker when no date is selected. Default value is 'End Date'
-- `day_size` (Float64; optional): Size of rendered calendar days, higher number
+- `day_size` (Real; optional): Size of rendered calendar days, higher number
 means bigger day size and larger calendar overall
 - `calendar_orientation` (a value equal to: 'vertical', 'horizontal'; optional): Orientation of calendar, either vertical or horizontal.
 Valid options are 'vertical' or 'horizontal'.
 - `is_RTL` (Bool; optional): Determines whether the calendar and days operate
 from left to right or from right to left
 - `reopen_calendar_on_clear` (Bool; optional): If True, the calendar will automatically open when cleared
-- `number_of_months_shown` (Float64; optional): Number of calendar months that are shown when calendar is opened
+- `number_of_months_shown` (Real; optional): Number of calendar months that are shown when calendar is opened
 - `with_portal` (Bool; optional): If True, calendar will open in a screen overlay portal,
 not supported on vertical calendar
 - `with_full_screen_portal` (Bool; optional): If True, calendar will open in a full screen overlay portal, will
@@ -59,7 +57,7 @@ take precedent over 'withPortal' if both are set to true,
 not supported on vertical calendar
 - `first_day_of_week` (a value equal to: 0, 1, 2, 3, 4, 5, 6; optional): Specifies what day is the first day of the week, values must be
 from [0, ..., 6] with 0 denoting Sunday and 6 denoting Saturday
-- `minimum_nights` (Float64; optional): Specifies a minimum number of nights that must be selected between
+- `minimum_nights` (Real; optional): Specifies a minimum number of nights that must be selected between
 the startDate and the endDate
 - `stay_open_on_select` (Bool; optional): If True the calendar will not close when the user has selected a value
 and will wait until the user clicks off the calendar
@@ -93,7 +91,7 @@ Those elements have the following types:
   - `is_loading` (Bool; optional): Determines if the component is loading or not
   - `prop_name` (String; optional): Holds which property is loading
   - `component_name` (String; optional): Holds the name of the component that is loading
-- `persistence` (Bool | String | Float64; optional): Used to allow user interactions in this component to be persisted when
+- `persistence` (Bool | String | Real; optional): Used to allow user interactions in this component to be persisted when
 the component - or the page - is refreshed. If `persisted` is truthy and
 hasn't changed from its previous value, any `persisted_props` that the
 user has changed while using the app will keep those changes, as long as
@@ -107,28 +105,8 @@ local: window.localStorage, data is kept after the browser quit.
 session: window.sessionStorage, data is cleared once the browser quit.
 """
 function dcc_datepickerrange(; kwargs...)
-        available_props = Set(Symbol[:id, :start_date, :start_date_id, :end_date_id, :end_date, :min_date_allowed, :max_date_allowed, :initial_visible_month, :start_date_placeholder_text, :end_date_placeholder_text, :day_size, :calendar_orientation, :is_RTL, :reopen_calendar_on_clear, :number_of_months_shown, :with_portal, :with_full_screen_portal, :first_day_of_week, :minimum_nights, :stay_open_on_select, :show_outside_days, :month_format, :display_format, :disabled, :clearable, :style, :className, :updatemode, :loading_state, :persistence, :persisted_props, :persistence_type])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("DatePickerRange", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_datepickerrange"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :start_date, :start_date_id, :end_date_id, :end_date, :min_date_allowed, :max_date_allowed, :initial_visible_month, :start_date_placeholder_text, :end_date_placeholder_text, :day_size, :calendar_orientation, :is_RTL, :reopen_calendar_on_clear, :number_of_months_shown, :with_portal, :with_full_screen_portal, :first_day_of_week, :minimum_nights, :stay_open_on_select, :show_outside_days, :month_format, :display_format, :disabled, :clearable, :style, :className, :updatemode, :loading_state, :persistence, :persisted_props, :persistence_type]
+        wild_props = Symbol[]
+        return Component("dcc_datepickerrange", "DatePickerRange", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_datepickerrange(children::Any; kwargs...)
-    result = dcc_datepickerrange(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_datepickerrange(children_maker::Function; kwargs...) = dcc_datepickerrange(children_maker(); kwargs...)

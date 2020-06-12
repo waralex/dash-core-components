@@ -4,8 +4,6 @@ export dcc_dropdown
 
 """
     dcc_dropdown(;kwargs...)
-    dcc_dropdown(children::Any;kwargs...)
-    dcc_dropdown(children_maker::Function;kwargs...)
 
 A Dropdown component.
 Dropdown is an interactive dropdown element for selecting one or more
@@ -23,18 +21,18 @@ components in an app.
 - `options` (optional): An array of options {label: [string|number], value: [string|number]},
 an optional disabled field can be used for each option. options has the following type: Array of lists containing elements 'label', 'value', 'disabled'.
 Those elements have the following types:
-  - `label` (String | Float64; required): The dropdown's label
-  - `value` (String | Float64; required): The value of the dropdown. This value
+  - `label` (String | Real; required): The dropdown's label
+  - `value` (String | Real; required): The value of the dropdown. This value
 corresponds to the items specified in the
 `value` property.
   - `disabled` (Bool; optional): If true, this option is disabled and cannot be selected.s
-- `value` (String | Float64 | Array of String | Float64s; optional): The value of the input. If `multi` is false (the default)
+- `value` (String | Real | Array of String | Reals; optional): The value of the input. If `multi` is false (the default)
 then value is just a string that corresponds to the values
 provided in the `options` property. If `multi` is true, then
 multiple values can be selected at once, and `value` is an
 array of items with values corresponding to those in the
 `options` prop.
-- `optionHeight` (Float64; optional): height of each option. Can be increased when label lengths would wrap around
+- `optionHeight` (Real; optional): height of each option. Can be increased when label lengths would wrap around
 - `className` (String; optional): className of the dropdown element
 - `clearable` (Bool; optional): Whether or not the dropdown is "clearable", that is, whether or
 not a small "x" appears on the right of the dropdown that removes
@@ -50,7 +48,7 @@ Those elements have the following types:
   - `is_loading` (Bool; optional): Determines if the component is loading or not
   - `prop_name` (String; optional): Holds which property is loading
   - `component_name` (String; optional): Holds the name of the component that is loading
-- `persistence` (Bool | String | Float64; optional): Used to allow user interactions in this component to be persisted when
+- `persistence` (Bool | String | Real; optional): Used to allow user interactions in this component to be persisted when
 the component - or the page - is refreshed. If `persisted` is truthy and
 hasn't changed from its previous value, a `value` that the user has
 changed while using the app will keep that change, as long as
@@ -65,28 +63,8 @@ local: window.localStorage, data is kept after the browser quit.
 session: window.sessionStorage, data is cleared once the browser quit.
 """
 function dcc_dropdown(; kwargs...)
-        available_props = Set(Symbol[:id, :options, :value, :optionHeight, :className, :clearable, :disabled, :multi, :placeholder, :searchable, :search_value, :style, :loading_state, :persistence, :persisted_props, :persistence_type])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Dropdown", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_dropdown"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :options, :value, :optionHeight, :className, :clearable, :disabled, :multi, :placeholder, :searchable, :search_value, :style, :loading_state, :persistence, :persisted_props, :persistence_type]
+        wild_props = Symbol[]
+        return Component("dcc_dropdown", "Dropdown", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_dropdown(children::Any; kwargs...)
-    result = dcc_dropdown(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_dropdown(children_maker::Function; kwargs...) = dcc_dropdown(children_maker(); kwargs...)

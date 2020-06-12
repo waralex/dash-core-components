@@ -4,8 +4,6 @@ export dcc_graph
 
 """
     dcc_graph(;kwargs...)
-    dcc_graph(children::Any;kwargs...)
-    dcc_graph(children_maker::Function;kwargs...)
 
 A Graph component.
 Graph can be used to render any plotly.js-powered data visualization.
@@ -82,12 +80,12 @@ the arrow length & direction unchanged)
   - `autosizable` (Bool; optional): DO autosize once regardless of layout.autosize
 (use default width or height values otherwise)
   - `responsive` (Bool; optional): Whether to change layout size when the window size changes
-  - `queueLength` (Float64; optional): Set the length of the undo/redo queue
+  - `queueLength` (Real; optional): Set the length of the undo/redo queue
   - `fillFrame` (Bool; optional): If we DO autosize, do we fill the container or the screen?
-  - `frameMargins` (Float64; optional): If we DO autosize, set the frame margins in percents of plot size
+  - `frameMargins` (Real; optional): If we DO autosize, set the frame margins in percents of plot size
   - `scrollZoom` (Bool; optional): Mousewheel or two-finger scroll zooms the plot
   - `doubleClick` (a value equal to: false, 'reset', 'autosize', 'reset+autosize'; optional): Double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
-  - `doubleClickDelay` (Float64; optional): Delay for registering a double-click event in ms. The
+  - `doubleClickDelay` (Real; optional): Delay for registering a double-click event in ms. The
 minimum value is 100 and the maximum value is 1000. By
 default this is 300.
   - `showTips` (Bool; optional): New users see some hints about interactivity
@@ -115,22 +113,22 @@ sendDataToCloud;
 (Geo) zoomInGeo, zoomOutGeo, resetGeo, hoverClosestGeo;
 hoverClosestGl2d, hoverClosestPie, toggleHover, resetViews.
   - `modeBarButtonsToAdd` (Array; optional): Add mode bar button using config objects
-  - `modeBarButtons` (Bool | Float64 | String | Dict | Array; optional): Fully custom mode bar buttons as nested array,
+  - `modeBarButtons` (Bool | Real | String | Dict | Array; optional): Fully custom mode bar buttons as nested array,
 where the outer arrays represents button groups, and
 the inner arrays have buttons config objects or names of default buttons
   - `toImageButtonOptions` (optional): Modifications to how the toImage modebar button works. toImageButtonOptions has the following type: lists containing elements 'format', 'filename', 'width', 'height', 'scale'.
 Those elements have the following types:
   - `format` (a value equal to: 'jpeg', 'png', 'webp', 'svg'; optional): The file format to create
   - `filename` (String; optional): The name given to the downloaded file
-  - `width` (Float64; optional): Width of the downloaded file, in px
-  - `height` (Float64; optional): Height of the downloaded file, in px
-  - `scale` (Float64; optional): Extra resolution to give the file after
+  - `width` (Real; optional): Width of the downloaded file, in px
+  - `height` (Real; optional): Height of the downloaded file, in px
+  - `scale` (Real; optional): Extra resolution to give the file after
 rendering it with the given width and height
   - `displaylogo` (Bool; optional): Add the plotly logo on the end of the mode bar
   - `watermark` (Bool; optional): Add the plotly logo even with no modebar
-  - `plotGlPixelRatio` (Float64; optional): Increase the pixel ratio for Gl plot images
+  - `plotGlPixelRatio` (Real; optional): Increase the pixel ratio for Gl plot images
   - `topojsonURL` (String; optional): URL to topojson files used in geo charts
-  - `mapboxAccessToken` (Bool | Float64 | String | Dict | Array; optional): Mapbox access token (required to plot mapbox trace types)
+  - `mapboxAccessToken` (Bool | Real | String | Dict | Array; optional): Mapbox access token (required to plot mapbox trace types)
 If using an Mapbox Atlas server, set this option to '',
 so that plotly.js won't attempt to authenticate to the public Mapbox server.
   - `locale` (String; optional): The locale to use. Locales may be provided with the plot
@@ -145,28 +143,8 @@ Those elements have the following types:
   - `component_name` (String; optional): Holds the name of the component that is loading
 """
 function dcc_graph(; kwargs...)
-        available_props = Set(Symbol[:id, :clickData, :clickAnnotationData, :hoverData, :clear_on_unhover, :selectedData, :relayoutData, :extendData, :restyleData, :figure, :style, :className, :animate, :animation_options, :config, :loading_state])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Graph", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_graph"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :clickData, :clickAnnotationData, :hoverData, :clear_on_unhover, :selectedData, :relayoutData, :extendData, :restyleData, :figure, :style, :className, :animate, :animation_options, :config, :loading_state]
+        wild_props = Symbol[]
+        return Component("dcc_graph", "Graph", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_graph(children::Any; kwargs...)
-    result = dcc_graph(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_graph(children_maker::Function; kwargs...) = dcc_graph(children_maker(); kwargs...)

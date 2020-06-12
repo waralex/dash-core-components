@@ -7,6 +7,7 @@ export dcc_tab
     dcc_tab(children::Any;kwargs...)
     dcc_tab(children_maker::Function;kwargs...)
 
+
 A Tab component.
 Part of dcc.Tabs - this is the child Tab component used to render a tabbed page.
 Its children will be set as the content of that tab, which if clicked will become visible.
@@ -31,28 +32,11 @@ Those elements have the following types:
   - `component_name` (String; optional): Holds the name of the component that is loading
 """
 function dcc_tab(; kwargs...)
-        available_props = Set(Symbol[:children, :id, :label, :value, :disabled, :disabled_style, :disabled_className, :className, :selected_className, :style, :selected_style, :loading_state])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Tab", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_tab"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:children, :id, :label, :value, :disabled, :disabled_style, :disabled_className, :className, :selected_className, :style, :selected_style, :loading_state]
+        wild_props = Symbol[]
+        return Component("dcc_tab", "Tab", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_tab(children::Any; kwargs...)
-    result = dcc_tab(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
+dcc_tab(children::Any; kwargs...) = dcc_tab(;kwargs..., children = children)
 dcc_tab(children_maker::Function; kwargs...) = dcc_tab(children_maker(); kwargs...)
+

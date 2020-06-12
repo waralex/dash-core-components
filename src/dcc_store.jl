@@ -4,8 +4,6 @@ export dcc_store
 
 """
     dcc_store(;kwargs...)
-    dcc_store(children::Any;kwargs...)
-    dcc_store(children_maker::Function;kwargs...)
 
 A Store component.
 Easily keep data on the client side with this component.
@@ -21,33 +19,13 @@ components in an app.
 memory: only kept in memory, reset on page refresh.
 local: window.localStorage, data is kept after the browser quit.
 session: window.sessionStorage, data is cleared once the browser quit.
-- `data` (Dict | Array | Float64 | String | Bool; optional): The stored data for the id.
+- `data` (Dict | Array | Real | String | Bool; optional): The stored data for the id.
 - `clear_data` (Bool; optional): Set to true to remove the data contained in `data_key`.
-- `modified_timestamp` (Float64; optional): The last time the storage was modified.
+- `modified_timestamp` (Real; optional): The last time the storage was modified.
 """
 function dcc_store(; kwargs...)
-        available_props = Set(Symbol[:id, :storage_type, :data, :clear_data, :modified_timestamp])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Store", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_store"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :storage_type, :data, :clear_data, :modified_timestamp]
+        wild_props = Symbol[]
+        return Component("dcc_store", "Store", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_store(children::Any; kwargs...)
-    result = dcc_store(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_store(children_maker::Function; kwargs...) = dcc_store(children_maker(); kwargs...)

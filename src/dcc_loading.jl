@@ -7,6 +7,7 @@ export dcc_loading
     dcc_loading(children::Any;kwargs...)
     dcc_loading(children_maker::Function;kwargs...)
 
+
 A Loading component.
 A Loading component that wraps any other component and displays a spinner until the wrapped component has rendered.
 Keyword arguments:
@@ -27,28 +28,11 @@ Those elements have the following types:
   - `component_name` (String; optional): Holds the name of the component that is loading
 """
 function dcc_loading(; kwargs...)
-        available_props = Set(Symbol[:children, :id, :type, :fullscreen, :debug, :className, :style, :color, :loading_state])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Loading", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_loading"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:children, :id, :type, :fullscreen, :debug, :className, :style, :color, :loading_state]
+        wild_props = Symbol[]
+        return Component("dcc_loading", "Loading", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_loading(children::Any; kwargs...)
-    result = dcc_loading(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
+dcc_loading(children::Any; kwargs...) = dcc_loading(;kwargs..., children = children)
 dcc_loading(children_maker::Function; kwargs...) = dcc_loading(children_maker(); kwargs...)
+

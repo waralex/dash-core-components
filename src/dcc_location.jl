@@ -4,8 +4,6 @@ export dcc_location
 
 """
     dcc_location(;kwargs...)
-    dcc_location(children::Any;kwargs...)
-    dcc_location(children_maker::Function;kwargs...)
 
 A Location component.
 Update and track the current window.location object through the window.history state.
@@ -21,28 +19,8 @@ components in an app.
 - `refresh` (Bool; optional): Refresh the page when the location is updated?
 """
 function dcc_location(; kwargs...)
-        available_props = Set(Symbol[:id, :pathname, :search, :hash, :href, :refresh])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("Location", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_location"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :pathname, :search, :hash, :href, :refresh]
+        wild_props = Symbol[]
+        return Component("dcc_location", "Location", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_location(children::Any; kwargs...)
-    result = dcc_location(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_location(children_maker::Function; kwargs...) = dcc_location(children_maker(); kwargs...)

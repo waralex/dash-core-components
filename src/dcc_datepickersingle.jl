@@ -4,8 +4,6 @@ export dcc_datepickersingle
 
 """
     dcc_datepickersingle(;kwargs...)
-    dcc_datepickersingle(children::Any;kwargs...)
-    dcc_datepickersingle(children_maker::Function;kwargs...)
 
 A DatePickerSingle component.
 DatePickerSingle is a tailor made component designed for selecting
@@ -32,7 +30,7 @@ in the format 'YYYY-MM-DD'
 - `initial_visible_month` (String; optional): Specifies the month that is initially presented when the user
 opens the calendar. Accepts datetime.datetime objects or strings
 in the format 'YYYY-MM-DD'
-- `day_size` (Float64; optional): Size of rendered calendar days, higher number
+- `day_size` (Real; optional): Size of rendered calendar days, higher number
 means bigger day size and larger calendar overall
 - `calendar_orientation` (a value equal to: 'vertical', 'horizontal'; optional): Orientation of calendar, either vertical or horizontal.
 Valid options are 'vertical' or 'horizontal'.
@@ -42,7 +40,7 @@ from left to right or from right to left
 box of the date picker when no date is selected.
 Default value is 'Start Date'
 - `reopen_calendar_on_clear` (Bool; optional): If True, the calendar will automatically open when cleared
-- `number_of_months_shown` (Float64; optional): Number of calendar months that are shown when calendar is opened
+- `number_of_months_shown` (Real; optional): Number of calendar months that are shown when calendar is opened
 - `with_portal` (Bool; optional): If True, calendar will open in a screen overlay portal,
 not supported on vertical calendar
 - `with_full_screen_portal` (Bool; optional): If True, calendar will open in a full screen overlay portal, will
@@ -76,7 +74,7 @@ Those elements have the following types:
   - `is_loading` (Bool; optional): Determines if the component is loading or not
   - `prop_name` (String; optional): Holds which property is loading
   - `component_name` (String; optional): Holds the name of the component that is loading
-- `persistence` (Bool | String | Float64; optional): Used to allow user interactions in this component to be persisted when
+- `persistence` (Bool | String | Real; optional): Used to allow user interactions in this component to be persisted when
 the component - or the page - is refreshed. If `persisted` is truthy and
 hasn't changed from its previous value, a `date` that the user has
 changed while using the app will keep that change, as long as
@@ -91,28 +89,8 @@ local: window.localStorage, data is kept after the browser quit.
 session: window.sessionStorage, data is cleared once the browser quit.
 """
 function dcc_datepickersingle(; kwargs...)
-        available_props = Set(Symbol[:id, :date, :min_date_allowed, :max_date_allowed, :initial_visible_month, :day_size, :calendar_orientation, :is_RTL, :placeholder, :reopen_calendar_on_clear, :number_of_months_shown, :with_portal, :with_full_screen_portal, :first_day_of_week, :stay_open_on_select, :show_outside_days, :month_format, :display_format, :disabled, :clearable, :style, :className, :loading_state, :persistence, :persisted_props, :persistence_type])
-        wild_props = Set(Symbol[])
-        wild_regs = r"^(?<prop>)"
-
-        result = Component("DatePickerSingle", "dash_core_components", Dict{Symbol, Any}(), available_props, Set(Symbol[]))
-
-        for (prop, value) = pairs(kwargs)
-            m = match(wild_regs, string(prop))
-            if (length(wild_props) == 0 || isnothing(m)) && !(prop in available_props)
-                throw(ArgumentError("Invalid property $(string(prop)) for component " * "dcc_datepickersingle"))
-            end
-
-            push!(result.props, prop => Front.to_dash(value))
-        end
-
-    return result
+        available_props = Symbol[:id, :date, :min_date_allowed, :max_date_allowed, :initial_visible_month, :day_size, :calendar_orientation, :is_RTL, :placeholder, :reopen_calendar_on_clear, :number_of_months_shown, :with_portal, :with_full_screen_portal, :first_day_of_week, :stay_open_on_select, :show_outside_days, :month_format, :display_format, :disabled, :clearable, :style, :className, :loading_state, :persistence, :persisted_props, :persistence_type]
+        wild_props = Symbol[]
+        return Component("dcc_datepickersingle", "DatePickerSingle", "dash_core_components", available_props, wild_props; kwargs...)
 end
 
-function dcc_datepickersingle(children::Any; kwargs...)
-    result = dcc_datepickersingle(;kwargs...)
-    push!(result.props, :children => Front.to_dash(children))
-    return result
-end
-
-dcc_datepickersingle(children_maker::Function; kwargs...) = dcc_datepickersingle(children_maker(); kwargs...)
