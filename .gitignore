@@ -1,7 +1,5 @@
 .build_cache/
 build/
-dist/
-lib/
 lib/bundle.js*
 coverage/
 node_modules/
@@ -16,7 +14,7 @@ venv/
 .DS_Store
 
 /build
-/dash_core_components
+
 dash_core_components_base/plotly.min.js
 /inst
 /man
